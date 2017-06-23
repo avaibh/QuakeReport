@@ -91,7 +91,7 @@ public class EarthquakeActivity extends AppCompatActivity implements LoaderManag
             mAdapter.addAll(earthquakes);
         }
         if(!isNetworkAvailable()){
-            Toast.makeText(this, "No Internet Connection! \nPlease Connect to the internet", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "No Internet Connection! \nPlease Connect to the internet", Toast.LENGTH_LONG).show();
         }
 
 
