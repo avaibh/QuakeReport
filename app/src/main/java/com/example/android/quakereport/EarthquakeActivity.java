@@ -4,8 +4,11 @@
 package com.example.android.quakereport;
 
 import android.app.LoaderManager;
+import android.content.Context;
 import android.content.Intent;
 import android.content.Loader;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -14,6 +17,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +33,12 @@ public class EarthquakeActivity extends AppCompatActivity implements LoaderManag
     /** Adapter for the list of earthquakes */
     private EarthquakeAdapter mAdapter;
 
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,7 +47,6 @@ public class EarthquakeActivity extends AppCompatActivity implements LoaderManag
         // Find a reference to the {@link ListView} in the layout
         ListView earthquakeListView = (ListView) findViewById(R.id.list);
         earthquakeListView.setEmptyView(findViewById(R.id.empty_text_view));
-
         // Create a new adapter that takes an empty list of earthquakes as input
         mAdapter = new EarthquakeAdapter(this, new ArrayList<Earthquake>());
 
@@ -71,15 +80,21 @@ public class EarthquakeActivity extends AppCompatActivity implements LoaderManag
     }
     @Override
     public void onLoadFinished(Loader<List<Earthquake>> loader, List<Earthquake> earthquakes) {
-        mAdapter.clear();
-        if (earthquakes != null && !earthquakes.isEmpty()) {
-           mAdapter.addAll(earthquakes);
-        }
+        ProgressBar loadingSpinner = (ProgressBar) findViewById(R.id.loading_spinner);
+
+        loadingSpinner.setVisibility(View.GONE);
+
         TextView emptyTextView = (TextView) findViewById(R.id.empty_text_view);
         emptyTextView.setText(R.string.no_earthquakes);
+        mAdapter.clear();
+        if (earthquakes != null && !earthquakes.isEmpty()) {
+            mAdapter.addAll(earthquakes);
+        }
+        if(!isNetworkAvailable()){
+            Toast.makeText(this, "No Internet Connection! \nPlease Connect to the internet", Toast.LENGTH_SHORT).show();
+        }
 
-        ProgressBar loadingSpinner = (ProgressBar) findViewById(R.id.loading_spinner);
-        loadingSpinner.setVisibility(View.GONE);
+
     }
 
     @Override
