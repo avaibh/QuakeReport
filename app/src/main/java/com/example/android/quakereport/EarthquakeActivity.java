@@ -32,7 +32,6 @@ public class EarthquakeActivity extends AppCompatActivity implements LoaderManag
 
     /** Adapter for the list of earthquakes */
     private EarthquakeAdapter mAdapter;
-
     private boolean isNetworkAvailable() {
         ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
@@ -49,7 +48,6 @@ public class EarthquakeActivity extends AppCompatActivity implements LoaderManag
         earthquakeListView.setEmptyView(findViewById(R.id.empty_text_view));
         // Create a new adapter that takes an empty list of earthquakes as input
         mAdapter = new EarthquakeAdapter(this, new ArrayList<Earthquake>());
-
         // Set the adapter on the {@link ListView}
         // so the list can be populated in the user interface
         earthquakeListView.setAdapter(mAdapter);
@@ -85,13 +83,15 @@ public class EarthquakeActivity extends AppCompatActivity implements LoaderManag
         loadingSpinner.setVisibility(View.GONE);
 
         TextView emptyTextView = (TextView) findViewById(R.id.empty_text_view);
-        emptyTextView.setText(R.string.no_earthquakes);
         mAdapter.clear();
         if (earthquakes != null && !earthquakes.isEmpty()) {
             mAdapter.addAll(earthquakes);
         }
         if(!isNetworkAvailable()){
-            Toast.makeText(this, "No Internet Connection! \nPlease Connect to the internet", Toast.LENGTH_LONG).show();
+            emptyTextView.setText(R.string.no_internet);
+            Toast.makeText(this, "No Internet Connection! \nPlease Connect to the internet", Toast.LENGTH_SHORT).show();
+        }else{
+            emptyTextView.setText(R.string.no_earthquakes);
         }
 
 
